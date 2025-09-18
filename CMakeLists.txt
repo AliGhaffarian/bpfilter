@@ -28,8 +28,6 @@ option(NO_BENCHMARKS "Disable the benchmark" 0)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_C_FLAGS_RELEASE "")       # No NDEBUG in release mode
-set(CMAKE_CXX_FLAGS_RELEASE "")     # No NDEBUG in release mode
 
 set(BF_CONTACT "Quentin Deslandes <qde@naccy.de>")
 
@@ -45,6 +43,11 @@ else ()
     endif ()
 endif ()
 
+if ( ${CMAKE_BUILD_TYPE} STREQUAL "release" OR ${BF_LOWER_BUILD_TYPE} STREQUAL "release" )
+    set(CMAKE_C_FLAGS_RELEASE "")       # No NDEBUG in release mode
+    set(CMAKE_CXX_FLAGS_RELEASE "")     # No NDEBUG in release mode
+endif ()
+
 # Ensure artefacts are moved to a common directory
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/output/include/bpfilter)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib/pkgconfig)
@@ -56,7 +59,7 @@ add_library(bf_global_flags INTERFACE)
 target_compile_options(bf_global_flags
     INTERFACE
         -std=gnu17 -Wall -Wextra -fPIC
-        $<$<CONFIG:debug>:-O0 -g3 -ggdb -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined>
+        $<$<CONFIG:debug>:-O0 -g3 -ggdb -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined -DNDEBUG>
         $<$<CONFIG:release>:-O2>
 )
 target_include_directories(bf_global_flags
